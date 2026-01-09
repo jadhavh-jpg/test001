@@ -1,53 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>PayMoney24 – Instant UPI Payment</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PayMoney24</title>
 
 <style>
 :root{
   --primary:#16a34a;
-  --dark:#0f172a;
-  --bg:#f8fafc;
 }
-*{box-sizing:border-box;font-family:Inter,system-ui,-apple-system}
+*{box-sizing:border-box;font-family:system-ui,-apple-system}
 body{
   margin:0;
-  background:var(--bg);
+  background:#f1f5f9;
   color:#0f172a;
 }
 .container{
   max-width:420px;
   margin:auto;
-  padding:20px;
-}
-.card{
-  background:#fff;
-  border-radius:20px;
-  padding:22px;
-  box-shadow:0 20px 40px rgba(0,0,0,.08);
+  padding:16px;
 }
 .hero{
-  background:linear-gradient(135deg,var(--primary),#22c55e);
+  background:var(--primary);
   color:#fff;
-  border-radius:20px;
-  padding:26px;
+  padding:22px;
+  border-radius:18px;
   text-align:center;
 }
 .hero h1{margin:0;font-size:26px}
-.hero p{margin:8px 0 0;opacity:.9}
+.hero p{margin-top:6px;opacity:.9}
+
+.card{
+  background:#fff;
+  margin-top:16px;
+  padding:20px;
+  border-radius:18px;
+  box-shadow:0 20px 40px rgba(0,0,0,.08);
+}
 
 .media img{
   width:100%;
   border-radius:16px;
-  margin:20px 0;
 }
 
 .price{
   font-size:22px;
   font-weight:800;
-  margin:10px 0;
+  margin:14px 0;
 }
 
 button{
@@ -55,54 +54,35 @@ button{
   padding:14px;
   border:none;
   border-radius:999px;
-  font-size:16px;
+  font-size:15px;
   font-weight:700;
   cursor:pointer;
 }
 
-.pay-btn{
-  background:#ef4444;
-  color:#fff;
-  margin-top:10px;
-}
-
-.wa-btn{
-  background:#22c55e;
-  color:#000;
-  margin-top:12px;
-}
+.pay{background:#ef4444;color:#fff}
+.copy{background:#0f172a;color:#fff;margin-top:10px}
+.wa{background:#22c55e;color:#000;margin-top:10px}
 
 .features{
-  margin-top:16px;
+  margin-top:14px;
   font-size:14px;
-}
-.features p{
-  margin:6px 0;
   color:#334155;
 }
+.features div{margin:6px 0}
 
 .qr{
   display:none;
   text-align:center;
   margin-top:16px;
 }
-.qr img{
-  width:220px;
-  margin:auto;
-}
+.qr img{width:220px}
 
 footer{
   text-align:center;
-  margin-top:16px;
   font-size:12px;
   color:#64748b;
+  margin:16px 0;
 }
-  .share-btn{
-  background:#0f172a;
-  color:#fff;
-  margin-top:12px;
-}
-
 </style>
 </head>
 
@@ -111,36 +91,29 @@ footer{
 <div class="container">
 
   <div class="hero">
-    <h1>3-Day Yoga Class</h1>
-    <p>Beginner Friendly · Limited Seats</p>
+    <h1 id="title"></h1>
+    <p id="subtitle"></p>
   </div>
 
   <div class="card">
 
     <div class="media">
-      <img src="https://images.unsplash.com/photo-1552196563-55cd4e45efb3?q=80&w=800" alt="Yoga">
+      <img id="image">
     </div>
 
-    <div class="price">Entry Fee: ₹500</div>
+    <div class="price" id="price"></div>
 
-    <button class="pay-btn" onclick="payNow()">Pay & Join</button>
-    <button class="share-btn" onclick="copyLink()">📋 Copy Page Link</button>
-
-<button class="wa-btn" onclick="shareWhatsApp()">📤 Share on WhatsApp</button>
-
+    <button class="pay" onclick="payNow()">Pay & Join</button>
+    <button class="copy" onclick="copyLink()">📋 Copy Page Link</button>
+    <button class="wa" onclick="shareWA()">📤 Share on WhatsApp</button>
+    <button class="wa" onclick="joinWA()">Join WhatsApp Group</button>
 
     <div class="qr" id="qrBox">
       <p>Scan & Pay</p>
       <img id="qrImg">
     </div>
 
-    <button class="wa-btn" onclick="joinWhatsApp()">Join WhatsApp Group</button>
-
-    <div class="features">
-      <p>✅ Secure UPI Payment</p>
-      <p>✅ Instant Confirmation</p>
-      <p>✅ Mobile Friendly</p>
-    </div>
+    <div class="features" id="features"></div>
 
   </div>
 
@@ -151,48 +124,65 @@ footer{
 </div>
 
 <script>
-const UPI_ID = "jadhav.h3@ybl";
-const NAME = "PayMoney24";
-const AMOUNT = "500";
-const WA_LINK = "https://chat.whatsapp.com/";
+const q = new URLSearchParams(location.search);
+
+const title = q.get("t") || "Program";
+const subtitle = q.get("s") || "";
+const amount = q.get("a") || "0";
+const upi = q.get("upi") || "";
+const wa = q.get("wa") || "";
+const color = q.get("c") || "16a34a";
+const img = q.get("img");
+
+document.documentElement.style.setProperty("--primary","#"+color);
+
+document.getElementById("title").innerText = title;
+document.getElementById("subtitle").innerText = subtitle;
+document.getElementById("price").innerText = "Entry Fee: ₹" + amount;
+
+if(img){
+  document.getElementById("image").src = img;
+}else{
+  document.getElementById("image").style.display="none";
+}
+
+const features = ["f1","f2","f3","f4"]
+  .map(k=>q.get(k))
+  .filter(Boolean)
+  .map(t=>"✅ "+t)
+  .join("<div></div>");
+
+document.getElementById("features").innerHTML = features;
 
 function payNow(){
-  const upiData =
-    `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(NAME)}&am=${AMOUNT}&cu=INR`;
+  const upiLink =
+    `upi://pay?pa=${upi}&pn=${encodeURIComponent(title)}&am=${amount}&cu=INR`;
 
   const qr =
-    `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiData)}`;
+    `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiLink)}`;
 
   document.getElementById("qrImg").src = qr;
-  document.getElementById("qrBox").style.display = "block";
+  document.getElementById("qrBox").style.display="block";
   document.getElementById("qrBox").scrollIntoView({behavior:"smooth"});
 }
 
-function joinWhatsApp(){
-  window.open(WA_LINK,"_blank");
-}
-
 function copyLink(){
-  const url = window.location.href;
-  navigator.clipboard.writeText(url).then(()=>{
-    alert("Page link copied! Share it on WhatsApp.");
-  });
+  navigator.clipboard.writeText(location.href);
+  alert("Page link copied!");
 }
 
-function shareWhatsApp(){
-  const text = encodeURIComponent(
-    "Join this program & pay securely via UPI:\n" + window.location.href
+function shareWA(){
+  window.open(
+    "https://wa.me/?text=" +
+    encodeURIComponent("Pay securely here:\n"+location.href),
+    "_blank"
   );
-  window.open("https://wa.me/?text=" + text, "_blank");
+}
+
+function joinWA(){
+  if(wa) window.open(wa,"_blank");
 }
 </script>
 
-
-
-
 </body>
 </html>
-
-
-
-
