@@ -146,32 +146,18 @@ const NAME = "PayMoney24";
 const AMOUNT = "500";
 const WA_LINK = "https://chat.whatsapp.com/";
 
-function isMobile(){
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
-
 function payNow(){
-  const upiNative =
+  const upiData =
     `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(NAME)}&am=${AMOUNT}&cu=INR`;
 
-  const upiWeb =
-    `https://upi.link/pay?pa=${UPI_ID}&pn=${encodeURIComponent(NAME)}&am=${AMOUNT}&cu=INR`;
+  const qr =
+    `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiData)}`;
 
-  if(isMobile()){
-    // 🔹 First try native UPI
-    window.location.href = upiNative;
+  document.getElementById("qrImg").src = qr;
+  document.getElementById("qrBox").style.display = "block";
 
-    // 🔹 Fallback after 1.2 sec
-    setTimeout(() => {
-      window.location.href = upiWeb;
-    }, 1200);
-  }else{
-    // Desktop = QR
-    const qr =
-      `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiNative)}`;
-    document.getElementById("qrImg").src = qr;
-    document.getElementById("qrBox").style.display = "block";
-  }
+  // smooth scroll to QR
+  document.getElementById("qrBox").scrollIntoView({behavior:"smooth"});
 }
 
 function joinWhatsApp(){
@@ -180,6 +166,8 @@ function joinWhatsApp(){
 </script>
 
 
+
 </body>
 </html>
+
 
