@@ -20,7 +20,7 @@ button{cursor:pointer;font-weight:700}
 .card{max-width:420px;margin:auto;background:#fff;border-radius:20px;padding:20px;box-shadow:0 20px 40px rgba(0,0,0,.1)}
 .hero{background:var(--primary);color:#fff;padding:20px;border-radius:16px;text-align:center}
 .hero h1{margin:0}
-img{width:100%;border-radius:16px;margin:14px 0}
+.media img,.media iframe{width:100%;border-radius:16px;margin:14px 0}
 .pay{background:#ef4444;color:#fff}
 </style>
 </head>
@@ -42,8 +42,11 @@ img{width:100%;border-radius:16px;margin:14px 0}
     Subtitle
     <input id="sub" value="Beginner Friendly · Limited Seats">
 
-    Image URL
-    <input id="img" value="https://images.unsplash.com/photo-1552196563-55cd4e45efb3">
+    Upload Image
+    <input type="file" id="imgFile" accept="image/*">
+
+    OR YouTube Video Link
+    <input id="yt" placeholder="https://youtube.com/watch?v=...">
 
     Entry Fee
     <input id="amt" value="500">
@@ -70,6 +73,16 @@ img{width:100%;border-radius:16px;margin:14px 0}
 <div id="liveView" style="display:none"></div>
 
 <script>
+let uploadedImage = "";
+
+document.getElementById("imgFile").addEventListener("change", e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=> uploadedImage = reader.result;
+  reader.readAsDataURL(file);
+});
+
 const q = new URLSearchParams(location.search);
 const isLive = q.get("live") === "1";
 
@@ -85,11 +98,12 @@ function generate(){
   const data={
     t:title.value,
     s:sub.value,
-    i:img.value,
     a:amt.value,
     u:upi.value,
     w:wa.value,
-    c:color.value.replace("#","")
+    c:color.value.replace("#",""),
+    img: uploadedImage,
+    yt: yt.value
   };
   const url=location.origin+"?live=1&"+new URLSearchParams(data).toString();
   linkBox.value=url;
@@ -98,13 +112,22 @@ function generate(){
 
 function render(p,target){
   document.documentElement.style.setProperty("--primary","#"+p.get("c"));
+
+  let media="";
+  if(p.get("img")){
+    media=`<img src="${p.get("img")}">`;
+  }else if(p.get("yt")){
+    const id=p.get("yt").split("v=")[1];
+    media=`<iframe height="220" src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe>`;
+  }
+
   document.getElementById(target).innerHTML=`
     <div class="card">
       <div class="hero">
         <h1>${p.get("t")}</h1>
         <p>${p.get("s")}</p>
       </div>
-      <img src="${p.get("i")}">
+      <div class="media">${media}</div>
       <h3>Entry Fee: ₹${p.get("a")}</h3>
       <button class="pay" onclick="pay('${p.get("u")}',${p.get("a")})">Pay & Join</button>
       <button class="wa" onclick="window.open('${p.get("w")}')">Join WhatsApp Group</button>
