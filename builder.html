@@ -2,131 +2,138 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>PayMoney – Create Payment Link</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PayMoney24 Builder</title>
 
 <style>
-*{box-sizing:border-box;font-family:Inter,system-ui,Arial}
-body{margin:0;background:#f5f7fb}
-.container{
-  max-width:540px;
-  margin:40px auto;
+body{
+  font-family:system-ui,-apple-system;
+  background:#f1f5f9;
+  margin:0;
+  padding:16px;
+}
+.card{
+  max-width:420px;
+  margin:auto;
   background:#fff;
-  padding:26px;
-  border-radius:16px;
-  box-shadow:0 20px 45px rgba(0,0,0,.08)
+  padding:20px;
+  border-radius:18px;
+  box-shadow:0 20px 40px rgba(0,0,0,.1);
 }
-h1{margin:0 0 18px;font-size:22px}
-label{
-  display:block;
-  margin-top:16px;
-  font-weight:600;
-  font-size:14px
-}
+h2{margin:0 0 12px}
+label{font-size:13px;color:#334155}
 input,textarea{
   width:100%;
   padding:12px;
   margin-top:6px;
+  margin-bottom:12px;
   border-radius:10px;
-  border:1px solid #dbe1ea;
-  font-size:14px
+  border:1px solid #cbd5e1;
+  font-size:14px;
 }
-textarea{resize:vertical}
-small{
-  display:block;
-  margin-top:6px;
-  font-size:12px;
-  color:#64748b;
-  line-height:1.4
-}
+input[type=color]{padding:4px;height:44px}
 button{
   width:100%;
-  margin-top:26px;
-  padding:15px;
-  font-size:16px;
-  font-weight:800;
+  padding:14px;
   border:none;
-  border-radius:12px;
+  border-radius:999px;
+  font-size:15px;
+  font-weight:700;
   cursor:pointer;
-  background:linear-gradient(135deg,#4f46e5,#4338ca);
-  color:#fff;
-  box-shadow:0 12px 28px rgba(79,70,229,.35)
 }
-.note{
-  margin-top:14px;
-  font-size:12px;
-  color:#475569
-}
+.gen{background:#2563eb;color:#fff}
+.copy{background:#0f172a;color:#fff;margin-top:8px}
+.wa{background:#22c55e;color:#000;margin-top:8px}
+.small{font-size:12px;color:#64748b;margin-top:8px}
 </style>
 </head>
+
 <body>
 
-<div class="container">
-  <h1>Create PayMoney Link</h1>
+<div class="card">
+<h2>Create Landing Page</h2>
 
-  <label>Title *</label>
-  <input id="title" placeholder="e.g. Online Workshop Fee">
+<label>Theme Color</label>
+<input type="color" id="color" value="#16a34a">
 
-  <label>Description *</label>
-  <textarea id="desc" rows="3" placeholder="Short details about this payment"></textarea>
+<label>Title</label>
+<input id="title" placeholder="3-Day Yoga Class">
 
-  <label>Amount (₹) *</label>
-  <input id="amount" type="number" placeholder="499">
+<label>Subtitle</label>
+<input id="subtitle" placeholder="Beginner Friendly · Limited Seats">
 
-  <label>UPI ID *</label>
-  <input id="upi" placeholder="yourupi@bank">
+<label>Main Image</label>
+<input type="file" id="image" accept="image/*">
 
-  <label>Theme Color (optional)</label>
-  <input id="color" type="color" value="#4f46e5">
-  <small>Landing page buttons & highlights will use this color</small>
+<label>Entry Fee (₹)</label>
+<input id="amount" placeholder="500">
 
-  <label>Poster / Image URL (optional)</label>
-  <input id="image" placeholder="https://example.com/poster.jpg">
-  <small>
-    Recommended image sizes:<br>
-    • <strong>1080 × 1080 px</strong> (1:1 – square)<br>
-    • <strong>1080 × 1920 px</strong> (9:16 – vertical)<br>
-    Use compressed images to avoid loading issues
-  </small>
+<label>Feature 1</label>
+<input id="f1" placeholder="Secure UPI Payment">
+<label>Feature 2</label>
+<input id="f2" placeholder="Instant Confirmation">
+<label>Feature 3</label>
+<input id="f3" placeholder="Mobile Friendly">
+<label>Feature 4</label>
+<input id="f4" placeholder="Limited Seats">
 
-  <label>YouTube / Video Link (optional)</label>
-  <input id="video" placeholder="https://youtube.com/watch?v=xxxx">
+<label>UPI ID</label>
+<input id="upi" placeholder="name@upi">
 
-  <label>WhatsApp Number (optional)</label>
-  <input id="whatsapp" placeholder="91XXXXXXXXXX">
+<label>WhatsApp Group Link</label>
+<input id="wa" placeholder="https://chat.whatsapp.com/...">
 
-  <label>WhatsApp Group Link (optional)</label>
-  <input id="group" placeholder="https://chat.whatsapp.com/...">
+<button class="gen" onclick="generate()">Generate Page Link</button>
 
-  <button onclick="createLink()">Create Link</button>
+<input id="link" readonly placeholder="Generated link appears here">
+<button class="copy" onclick="copyLink()">📋 Copy Link</button>
+<button class="wa" onclick="shareWA()">📤 Share on WhatsApp</button>
 
-  <div class="note">
-    ✔ Mobile users: direct UPI payment<br>
-    ✔ Desktop users: QR code auto-generate
-  </div>
+<p class="small">
+User can open this link on mobile / desktop and pay via QR.
+</p>
 </div>
 
 <script>
-function createLink(){
-  const params = new URLSearchParams({
-    title: title.value.trim(),
-    desc: desc.value.trim(),
-    amount: amount.value.trim(),
-    upi: upi.value.trim(),
-    color: color.value,
-    image: image.value.trim(),
-    video: video.value.trim(),
-    whatsapp: whatsapp.value.trim(),
-    group: group.value.trim()
+let uploadedImage = "";
+
+document.getElementById("image").addEventListener("change", e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=> uploadedImage = reader.result;
+  reader.readAsDataURL(file);
+});
+
+function generate(){
+  const q = new URLSearchParams({
+    c: color.value.replace("#",""),
+    t: title.value,
+    s: subtitle.value,
+    a: amount.value,
+    upi: upi.value,
+    wa: wa.value,
+    f1: f1.value,
+    f2: f2.value,
+    f3: f3.value,
+    f4: f4.value,
+    img: uploadedImage
   });
+  const url = location.origin + "/index.html?" + q.toString();
+  link.value = url;
+}
 
-  if(!params.get('title') || !params.get('desc') || !params.get('amount') || !params.get('upi')){
-    alert("Please fill all required (*) fields");
-    return;
-  }
+function copyLink(){
+  navigator.clipboard.writeText(link.value);
+  alert("Link copied!");
+}
 
-  const landingURL = "lp.html?" + params.toString();
-  window.open(landingURL, "_blank");
+function shareWA(){
+  window.open(
+    "https://wa.me/?text=" +
+    encodeURIComponent("Pay securely using this link:\n" + link.value),
+    "_blank"
+  );
 }
 </script>
 
