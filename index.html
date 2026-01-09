@@ -165,15 +165,13 @@ function payNow(){
 
   document.getElementById("qrImg").src = qr;
   document.getElementById("qrBox").style.display = "block";
-
-  // smooth scroll to QR
   document.getElementById("qrBox").scrollIntoView({behavior:"smooth"});
 }
 
 function joinWhatsApp(){
   window.open(WA_LINK,"_blank");
 }
-<script>
+
 function copyLink(){
   const url = window.location.href;
   navigator.clipboard.writeText(url).then(()=>{
@@ -191,8 +189,10 @@ function shareWhatsApp(){
 
 
 
+
 </body>
 </html>
+
 
 
 
