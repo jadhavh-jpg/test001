@@ -97,6 +97,12 @@ footer{
   font-size:12px;
   color:#64748b;
 }
+  .share-btn{
+  background:#0f172a;
+  color:#fff;
+  margin-top:12px;
+}
+
 </style>
 </head>
 
@@ -118,6 +124,10 @@ footer{
     <div class="price">Entry Fee: ₹500</div>
 
     <button class="pay-btn" onclick="payNow()">Pay & Join</button>
+    <button class="share-btn" onclick="copyLink()">📋 Copy Page Link</button>
+
+<button class="wa-btn" onclick="shareWhatsApp()">📤 Share on WhatsApp</button>
+
 
     <div class="qr" id="qrBox">
       <p>Scan & Pay</p>
@@ -163,11 +173,26 @@ function payNow(){
 function joinWhatsApp(){
   window.open(WA_LINK,"_blank");
 }
+<script>
+function copyLink(){
+  const url = window.location.href;
+  navigator.clipboard.writeText(url).then(()=>{
+    alert("Page link copied! Share it on WhatsApp.");
+  });
+}
+
+function shareWhatsApp(){
+  const text = encodeURIComponent(
+    "Join this program & pay securely via UPI:\n" + window.location.href
+  );
+  window.open("https://wa.me/?text=" + text, "_blank");
+}
 </script>
 
 
 
 </body>
 </html>
+
 
 
